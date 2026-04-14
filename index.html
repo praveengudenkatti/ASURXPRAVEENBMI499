@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>FREE PANEL  Hub | PANEL  App</title>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-storage-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #080c14;
+            --surface: #0e1522;
+            --surface2: #131d2e;
+            --border: rgba(0,200,150,0.12);
+            --accent: #00e5a0;
+            --accent2: #00b8ff;
+            --accent3: #ff4f7b;
+            --text: #e8f0fe;
+            --text-muted: #5a7a9a;
+            --card-bg: #0d1825;
+            --glow: 0 0 24px rgba(0,229,160,0.18);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Exo 2', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Grid bg pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            background: linear-gradient(135deg, rgba(14,21,34,0.95), rgba(13,24,37,0.95));
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 16px 28px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5), var(--glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 42px; height: 42px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            color: #080c14;
+            box-shadow: 0 0 20px rgba(0,229,160,0.4);
+        }
+
+        .logo h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+
+        .logo h2 span { color: var(--accent); }
+
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            background: rgba(0,0,0,0.3);
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 22px;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex; align-items: center; gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-btn:hover { background: rgba(0,229,160,0.08); color: var(--accent); }
+
+        .nav-btn.active {
+            background: linear-gradient(135deg, rgba(0,229,160,0.2), rgba(0,184,255,0.1));
+            color: var(--accent);
+            border: 1px solid rgba(0,229,160,0.3);
+            box-shadow: 0 0 12px rgba(0,229,160,0.15);
+        }
+
+        /* ===== SECTION HEADER ===== */
+        .section-head {
+            margin-bottom: 24px;
+        }
+
+        .section-head h2 {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text);
+        }
+
+        .section-head h2 .icon { color: var(--accent); margin-right: 10px; }
+
+        .section-head p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4px;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== CARDS GRID ===== */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+        }
+
+        .file-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .file-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(0,229,160,0.05), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 0;
+        }
+
+        .file-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(0,229,160,0.35);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.5), 0 0 20px rgba(0,229,160,0.12);
+        }
+
+        .file-card:hover::before { opacity: 1; }
+
+        .card-img {
+            height: 185px;
+            background: var(--surface2);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img img {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .file-card:hover .card-img img { transform: scale(1.06); }
+
+        .card-img-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(8,12,20,0.7) 0%, transparent 60%);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px; right: 12px;
+            background: rgba(0,229,160,0.15);
+            border: 1px solid rgba(0,229,160,0.4);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .card-content {
+            padding: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.15rem;
+            letter-spacing: 0.5px;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .card-footer {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+        }
+
+        .card-action {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== BACK BUTTON ===== */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            transition: all 0.2s;
+            font-family: 'Exo 2', sans-serif;
+            letter-spacing: 0.5px;
+        }
+
+        .back-button:hover {
+            border-color: rgba(0,229,160,0.35);
+            color: var(--accent);
+            background: rgba(0,229,160,0.05);
+        }
+
+        /* ===== DETAIL & DOWNLOAD ===== */
+        .detail-container, .download-container {
+            background: var(--card-bg);
+            border-radius: 22px;
+            padding: 28px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detail-container::before, .download-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        }
+
+        .preview-media {
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border);
+        }
+
+        .preview-media img, .preview-media video {
+            max-width: 100%;
+            max-height: 420px;
+            border-radius: 12px;
+        }
+
+        .file-info {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 14px;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+        }
+
+        .file-info p { color: var(--text); line-height: 1.6; }
+
+        .detail-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+            color: var(--text);
+        }
+
+        .detail-title span { color: var(--accent); }
+
+        /* ===== BUTTONS ===== */
+        .btn-group {
+            display: flex;
+            gap: 14px;
+            margin: 24px 0 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            padding: 13px 30px;
+            border-radius: 10px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            font-size: 0.92rem;
+            font-family: 'Exo 2', sans-serif;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--accent), #00c58a);
+            color: #080c14;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(0,229,160,0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,229,160,0.45);
+        }
+
+        .btn-secondary {
+            padding: 13px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.92rem;
+            font-family: 'Exo 2', sans-serif;
+            letter-spacing: 0.5px;
+            background: var(--surface);
+            color: var(--text-muted);
+            border: 1px solid var(--border);
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            border-color: rgba(0,229,160,0.3);
+            color: var(--text);
+        }
+
+        /* ===== NOTIFICATIONS ===== */
+        .notifications-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .notif-item {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 18px 20px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: all 0.2s;
+        }
+
+        .notif-item:hover {
+            border-color: rgba(0,229,160,0.25);
+            background: rgba(0,229,160,0.03);
+        }
+
+        .notif-icon {
+            width: 38px; height: 38px;
+            background: rgba(0,229,160,0.1);
+            border: 1px solid rgba(0,229,160,0.25);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent);
+            flex-shrink: 0;
+        }
+
+        .notif-content strong {
+            display: block;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .notif-time {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== EMPTY STATE ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            color: rgba(0,229,160,0.3);
+            margin-bottom: 16px;
+        }
+
+        /* ===== LOADING ===== */
+        .loading-spinner {
+            text-align: center;
+            padding: 40px;
+            color: var(--accent);
+        }
+
+        .hidden { display: none !important; }
+
+        /* ===== PULSE DOT ===== */
+        .live-dot {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            margin-left: 6px;
+            box-shadow: 0 0 6px var(--accent);
+            animation: pulse-dot 1.5s infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .fa-spinner { animation: spin 0.8s linear infinite; }
+
+        /* ===== PAGE TRANSITION ===== */
+        .page-content {
+            animation: fadeSlideIn 0.25s ease;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== TOAST ===== */
+        .toast-custom {
+            position: fixed;
+            bottom: 24px; right: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 12px 22px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            font-family: 'Exo 2', sans-serif;
+            z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5), var(--glow);
+            border-left: 3px solid var(--accent);
+            animation: toastIn 0.3s ease;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 680px) {
+            .main-header { flex-direction: column; text-align: center; }
+            .btn-group { justify-content: center; }
+            .logo { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+
+    <!-- HEADER -->
+    <div class="main-header">
+        <div class="logo">
+            <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
+            <h2>E-<span>Sports</span> Hub</h2>
+        </div>
+        <div class="nav-tabs" id="navTabs">
+            <button class="nav-btn active" data-page="home">
+                <i class="fas fa-th-large"></i> Home
+            </button>
+            <button class="nav-btn" data-page="notifications">
+                <i class="fas fa-bell"></i> Alerts<span class="live-dot"></span>
+            </button>
+        </div>
+    </div>
+
+    <!-- HOME PAGE -->
+    <div id="homePage" class="page-content">
+        <div class="section-head">
+            <h2><i class="fas fa-fire icon"></i>Latest Media Files</h2>
+            <p>Click any card to view full details and download</p>
+        </div>
+        <div id="filesListGrid" class="files-grid">
+            <div class="loading-spinner" style="grid-column: 1/-1;">
+                <i class="fas fa-spinner"></i> Loading media files...
+            </div>
+        </div>
+    </div>
+
+    <!-- DETAILS PAGE -->
+    <div id="detailsPage" class="page-content hidden">
+        <button class="back-button" id="backToHomeBtn">
+            <i class="fas fa-arrow-left"></i> Back to Home
+        </button>
+        <div id="detailContent" class="detail-container">
+            <div class="loading-spinner">Loading...</div>
+        </div>
+    </div>
+
+    <!-- DOWNLOAD PAGE -->
+    <div id="downloadPage" class="page-content hidden">
+        <button class="back-button" id="backFromDownloadBtn">
+            <i class="fas fa-arrow-left"></i> Back to Details
+        </button>
+        <div id="downloadContent" class="download-container">
+            <div class="loading-spinner">Preparing...</div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS PAGE -->
+    <div id="notificationsPage" class="page-content hidden">
+        <div class="section-head">
+            <h2><i class="fas fa-bell icon"></i>Notifications</h2>
+            <p>Latest updates and announcements</p>
+        </div>
+        <div id="notificationsList" class="notifications-list">
+            <div class="loading-spinner"><i class="fas fa-spinner"></i> Fetching updates...</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const firebaseConfig = {
+  apiKey: "AIzaSyDwBrtu-7-Nsf-IKMIXJqvw8SN-s-dQrN8",
+  authDomain: "rxpraveenbmi.firebaseapp.com",
+  databaseURL: "https://rxpraveenbmi-default-rtdb.firebaseio.com",
+  projectId: "rxpraveenbmi",
+  storageBucket: "rxpraveenbmi.firebasestorage.app",
+  messagingSenderId: "142511920854",
+  appId: "1:142511920854:web:62f0091860ccd4153f1b77",
+  measurementId: "G-4NFW2HZLXN"
+};
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    let currentPage = "home";
+    let selectedFileId = null;
+    let selectedFileData = null;
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]||m));
+    }
+
+    function showToast(message) {
+        let toast = document.createElement('div');
+        toast.className = 'toast-custom';
+        toast.innerHTML = `<i class="fas fa-check-circle" style="color:var(--accent);margin-right:8px;"></i>${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2800);
+    }
+
+    async function fetchAllFiles() {
+        const snapshot = await db.ref('mediaFiles').once('value');
+        const files = [];
+        snapshot.forEach(child => files.push({ id: child.key, ...child.val() }));
+        files.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        return files;
+    }
+
+    async function renderHome() {
+        const container = document.getElementById('filesListGrid');
+        container.innerHTML = `<div class="loading-spinner" style="grid-column:1/-1;"><i class="fas fa-spinner"></i> Loading media files...</div>`;
+        try {
+            const files = await fetchAllFiles();
+            if (!files || files.length === 0) {
+                container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+                    <i class="fas fa-folder-open fa-3x" style="display:block;margin-bottom:16px;"></i>
+                    <p style="font-size:1.1rem;font-weight:600;color:var(--text);">No files yet</p>
+                    <p style="margin-top:6px;font-size:0.85rem;">Check back later for new content!</p>
+                </div>`;
+                return;
+            }
+            container.innerHTML = "";
+            files.forEach(file => {
+                const card = document.createElement('div');
+                card.className = 'file-card';
+                card.onclick = () => openDetails(file.id);
+                const thumb = file.imageUrl || 'https://via.placeholder.com/400x240/0e1522/00e5a0?text=E-Sports';
+                const desc = file.description ? file.description.substring(0, 72) : 'Click to view details';
+                card.innerHTML = `
+                    <div class="card-img">
+                        <img src="${thumb}" alt="${escapeHtml(file.title)}" onerror="this.src='https://via.placeholder.com/400x240/0e1522/00e5a0?text=Preview'">
+                        <div class="card-img-overlay"></div>
+                        <div class="card-badge"><i class="fas fa-play" style="margin-right:4px;font-size:0.65rem;"></i>Media</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">${escapeHtml(file.title)}</div>
+                        <div class="card-desc">${escapeHtml(desc)}${file.description && file.description.length > 72 ? '...' : ''}</div>
+                        <div class="card-footer">
+                            <span class="card-action"><i class="fas fa-eye"></i> View Details</span>
+                            <span style="font-size:0.72rem;color:var(--text-muted);">${file.createdAt ? new Date(file.createdAt).toLocaleDateString() : ''}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        } catch (error) {
+            container.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-triangle fa-2x" style="display:block;margin-bottom:12px;color:var(--accent3);"></i>Failed to load files. Please refresh.</div>`;
+        }
+    }
+
+    async function openDetails(fileId) {
+        try {
+            const snapshot = await db.ref(`mediaFiles/${fileId}`).once('value');
+            const file = snapshot.val();
+            if (!file) { showToast("File not found"); return; }
+            selectedFileId = fileId;
+            selectedFileData = { id: fileId, ...file };
+            currentPage = "details";
+            updatePageView();
+            const detailDiv = document.getElementById('detailContent');
+            const thumbnail = file.imageUrl || 'https://via.placeholder.com/600x400/0e1522/00e5a0?text=No+Image';
+            detailDiv.innerHTML = `
+                <div class="preview-media">
+                    <img src="${thumbnail}" alt="${escapeHtml(file.title)}" style="max-width:100%;border-radius:12px;">
+                </div>
+                <div class="detail-title">${escapeHtml(file.title)}</div>
+                <div class="file-info">
+                    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:10px;font-weight:700;">
+                        <i class="fas fa-align-left" style="margin-right:6px;"></i>Description
+                    </div>
+                    <p style="color:var(--text-muted);line-height:1.7;">${escapeHtml(file.description) || 'No description provided.'}</p>
+                </div>
+                <div class="btn-group">
+                    <button id="openDownloadBtn" class="btn-primary">
+                        <i class="fas fa-download"></i> Open / Download
+                    </button>
+                    <button id="backDetailHomeBtn" class="btn-secondary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </button>
+                </div>
+            `;
+            document.getElementById('openDownloadBtn')?.addEventListener('click', () => openDownloadPage(fileId));
+            document.getElementById('backDetailHomeBtn')?.addEventListener('click', () => { currentPage="home"; updatePageView(); renderHome(); });
+        } catch (error) {
+            showToast("Error loading file details");
+        }
+    }
+
+    async function openDownloadPage(fileId) {
+        try {
+            const snapshot = await db.ref(`mediaFiles/${fileId}`).once('value');
+            const file = snapshot.val();
+            if (!file) { showToast("File not available"); return; }
+            selectedFileId = fileId;
+            selectedFileData = { id: fileId, ...file };
+            currentPage = "download";
+            updatePageView();
+            const dlContainer = document.getElementById('downloadContent');
+            const mediaUrl = file.mediaUrl || '';
+            const isVideo = mediaUrl.match(/\.(mp4|webm|mov|mkv|avi)$/i);
+            const isImage = mediaUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i);
+            const isAudio = mediaUrl.match(/\.(mp3|wav|ogg)$/i);
+            const fileType = mediaUrl.split('.').pop().toLowerCase();
+            let previewHtml = '';
+            if (isVideo) {
+                previewHtml = `<video controls autoplay style="max-width:100%;max-height:420px;border-radius:12px;">
+                    <source src="${mediaUrl}" type="video/mp4">Your browser does not support the video tag.</video>`;
+            } else if (isImage) {
+                previewHtml = `<img src="${mediaUrl}" alt="Preview" style="max-width:100%;max-height:420px;border-radius:12px;">`;
+            } else if (isAudio) {
+                previewHtml = `<audio controls style="width:100%;margin-bottom:16px;"><source src="${mediaUrl}"></audio>
+                    <div style="text-align:center;"><i class="fas fa-music fa-3x" style="color:var(--accent);"></i></div>`;
+            } else {
+                previewHtml = `<div style="padding:40px;text-align:center;">
+                    <i class="fas fa-file-alt fa-4x" style="color:var(--accent);display:block;margin-bottom:16px;"></i>
+                    <p style="color:var(--text-muted);">${escapeHtml(file.title)}.${fileType}</p>
+                </div>`;
+            }
+            dlContainer.innerHTML = `
+                <div class="detail-title" style="margin-bottom:20px;">
+                    <i class="fas fa-file-download" style="color:var(--accent);margin-right:10px;font-size:1.3rem;"></i>${escapeHtml(file.title)}
+                </div>
+                <div class="preview-media">${previewHtml}</div>
+                <div class="file-info">
+                    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:10px;font-weight:700;">
+                        <i class="fas fa-info-circle" style="margin-right:6px;"></i>File Info
+                    </div>
+                    <p style="color:var(--text-muted);">${escapeHtml(file.description) || 'No additional info'}</p>
+                    <p style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;"><i class="fas fa-link" style="margin-right:4px;color:var(--accent);"></i>Ready for download</p>
+                </div>
+                <div class="btn-group">
+                    <a href="${mediaUrl}" target="_blank" download class="btn-primary">
+                        <i class="fas fa-download"></i> Download File
+                    </a>
+                    <button id="backDownloadDetailsBtn" class="btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Details
+                    </button>
+                </div>
+            `;
+            document.getElementById('backDownloadDetailsBtn')?.addEventListener('click', () => {
+                currentPage = "details"; updatePageView(); openDetails(selectedFileId);
+            });
+        } catch (error) {
+            showToast("Error loading file preview");
+        }
+    }
+
+    async function loadNotifications() {
+        const container = document.getElementById('notificationsList');
+        container.innerHTML = `<div class="loading-spinner"><i class="fas fa-spinner"></i> Loading notifications...</div>`;
+        try {
+            const snapshot = await db.ref('notifications').once('value');
+            const notifications = [];
+            snapshot.forEach(child => notifications.push({ id: child.key, ...child.val() }));
+            notifications.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            if (notifications.length === 0) {
+                container.innerHTML = `<div class="empty-state">
+                    <i class="fas fa-bell-slash fa-3x" style="display:block;margin-bottom:16px;"></i>
+                    <p style="color:var(--text);font-weight:600;">No notifications yet</p>
+                    <p style="margin-top:6px;font-size:0.85rem;">New updates will appear here</p>
+                </div>`;
+                return;
+            }
+            container.innerHTML = notifications.map(notif => {
+                let icon = 'fa-bell', iconColor = 'var(--accent)';
+                if (notif.type === 'new_file') { icon = 'fa-plus-circle'; iconColor = 'var(--accent)'; }
+                else if (notif.type === 'updated_file') { icon = 'fa-edit'; iconColor = 'var(--accent2)'; }
+                else if (notif.type === 'deleted_file') { icon = 'fa-trash-alt'; iconColor = 'var(--accent3)'; }
+                const timeStr = new Date(notif.timestamp).toLocaleString();
+                return `
+                    <div class="notif-item">
+                        <div class="notif-icon" style="background:rgba(${iconColor==='var(--accent)'?'0,229,160':iconColor==='var(--accent2)'?'0,184,255':'255,79,123'},0.1);border-color:${iconColor}40;">
+                            <i class="fas ${icon}" style="color:${iconColor};"></i>
+                        </div>
+                        <div class="notif-content">
+                            <strong>${escapeHtml(notif.message)}</strong>
+                            <div class="notif-time"><i class="far fa-clock" style="margin-right:4px;"></i>${timeStr}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (error) {
+            container.innerHTML = `<div class="empty-state">Failed to load notifications.</div>`;
+        }
+    }
+
+    function updatePageView() {
+        ['homePage','detailsPage','downloadPage','notificationsPage'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+        if (currentPage === 'home') { document.getElementById('homePage').classList.remove('hidden'); renderHome(); }
+        else if (currentPage === 'details') document.getElementById('detailsPage').classList.remove('hidden');
+        else if (currentPage === 'download') document.getElementById('downloadPage').classList.remove('hidden');
+        else if (currentPage === 'notifications') { document.getElementById('notificationsPage').classList.remove('hidden'); loadNotifications(); }
+        document.querySelectorAll('#navTabs .nav-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.getAttribute('data-page') === currentPage);
+        });
+    }
+
+    document.querySelectorAll('#navTabs .nav-btn').forEach(btn => {
+        btn.addEventListener('click', () => { currentPage = btn.getAttribute('data-page'); updatePageView(); });
+    });
+    document.getElementById('backToHomeBtn')?.addEventListener('click', () => { currentPage="home"; updatePageView(); });
+    document.getElementById('backFromDownloadBtn')?.addEventListener('click', () => {
+        if (selectedFileId) { currentPage="details"; updatePageView(); openDetails(selectedFileId); }
+        else { currentPage="home"; updatePageView(); }
+    });
+
+    function setupRealtimeNotifications() {
+        db.ref('notifications').on('value', () => { if (currentPage === 'notifications') loadNotifications(); });
+    }
+    function setupRealtimeFiles() {
+        db.ref('mediaFiles').on('value', () => { if (currentPage === 'home') renderHome(); });
+    }
+
+    updatePageView();
+    setupRealtimeNotifications();
+    setupRealtimeFiles();
+</script>
+</body>
+</html>
